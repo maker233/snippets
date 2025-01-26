@@ -1,0 +1,645 @@
+<script>
+    (function() {
+        // Función para crear elementos de forma segura
+        function createElementSafe(tag, attributes, content) {
+            var element = document.createElement(tag);
+            for (var key in attributes) {
+                if (attributes.hasOwnProperty(key)) {
+                    element.setAttribute(key, attributes[key]);
+                }
+            }
+            if (content) {
+                element.textContent = content;
+            }
+            return element;
+        }
+    
+        // Función para crear el chatbot
+        function createChatbot() {
+            try {
+                // Crear el contenedor del chatbot con display: none inicial
+                var chatbotContainer = createElementSafe('div', {
+                    'class': 'chatbot-container',
+                    'style': 'display: none;' // Aseguramos que esté oculto desde el inicio
+                });
+
+                // Crear el botón flotante
+                var chatButton = createElementSafe('button', {
+                    'class': 'chat-floating-button',
+                    'id': 'chat-button'
+                });
+                
+                var buttonIcon = createElementSafe('img', {
+                    'src': 'https://cdn-icons-png.flaticon.com/512/2076/2076218.png',
+                    'alt': 'Chat Icon'
+                });
+                
+                chatButton.appendChild(buttonIcon);
+
+                // Añadir estilos para el botón flotante y modificar los estilos del contenedor
+                var additionalStyles = 
+                    '.chat-floating-button {' +
+                        'position: fixed;' +
+                        'bottom: 24px;' +
+                        'right: 24px;' +
+                        'width: 60px;' +
+                        'height: 60px;' +
+                        'border-radius: 30px;' +
+                        'background: #1a237e;' +
+                        'border: none;' +
+                        'cursor: pointer;' +
+                        'box-shadow: 0 4px 12px rgba(26,35,126,0.2);' +
+                        'transition: all 0.3s ease;' +
+                        'z-index: 1000;' +
+                        'padding: 0;' +
+                        'display: flex;' +
+                        'align-items: center;' +
+                        'justify-content: center;' +
+                    '}' +
+                    '@media (max-width: 480px) {' +
+                        '.chat-floating-button {' +
+                            'bottom: 16px;' +
+                            'right: 16px;' +
+                            'width: 50px;' +
+                            'height: 50px;' +
+                        '}' +
+                        '.chat-floating-button img {' +
+                            'width: 25px;' +
+                            'height: 25px;' +
+                        '}' +
+                    '}' +
+                    '.chat-floating-button:hover {' +
+                        'transform: scale(1.1);' +
+                        'box-shadow: 0 6px 16px rgba(26,35,126,0.3);' +
+                    '}' +
+                    '.chat-floating-button img {' +
+                        'width: 30px;' +
+                        'height: 30px;' +
+                        'object-fit: contain;' +
+                        'filter: brightness(0) invert(1);' + // Hacer el icono blanco
+                    '}';
+
+                // Crear y añadir el estilo
+                var styleElement = createElementSafe('style');
+                styleElement.textContent = additionalStyles + 
+                    '.chatbot-container {' +
+                        'width: 380px;' +
+                        'position: fixed;' +
+                        'bottom: 24px;' +
+                        'right: 24px;' +
+                        'z-index: 1000;' +
+                        'background: #fff;' +
+                        'border-radius: 16px;' +
+                        'box-shadow: 0 8px 24px rgba(0,0,0,0.12);' +
+                        'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;' +
+                        'transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);' +
+                        'transform-origin: bottom right;' +
+                        'opacity: 0;' +
+                        'transform: scale(0.95);' +
+                    '}' +
+                    '.chatbot-container.visible {' +
+                        'opacity: 1;' +
+                        'transform: scale(1);' +
+                    '}' +
+                    '.chatbot-container.maximized {' +
+                        'width: 80%;' +
+                        'max-width: 800px;' +
+                        'height: 80vh;' +
+                        'position: fixed;' +
+                        'top: 50%;' +
+                        'left: 50%;' +
+                        'transform: translate(-50%, -50%);' +
+                        'bottom: auto;' +
+                        'right: auto;' +
+                        'display: flex;' +
+                        'flex-direction: column;' +
+                        'overflow: hidden;' +
+                        'padding-bottom: 20px;' +
+                    '}' +
+                    '.chatbot-container.maximized .chatbot-window {' +
+                        'flex: 1;' +
+                        'height: calc(100% - 180px);' +
+                        'overflow-y: auto;' +
+                        'margin-bottom: 0;' +
+                    '}' +
+                    '.chatbot-container.maximized .input-container {' +
+                        'position: relative;' +
+                        'bottom: 0;' +
+                        'left: 0;' +
+                        'right: 0;' +
+                        'background: white;' +
+                        'border-radius: 0 0 16px 16px;' +
+                        'margin: 0;' +
+                        'padding: 16px 20px 20px;' +
+                        'width: 100%;' +
+                        'border-top: 1px solid rgba(0,0,0,0.1);' +
+                    '}' +
+                    '.chatbot-overlay {' +
+                        'position: fixed;' +
+                        'top: 0;' +
+                        'left: 0;' +
+                        'right: 0;' +
+                        'bottom: 0;' +
+                        'background: rgba(0,0,0,0.5);' +
+                        'opacity: 0;' +
+                        'transition: opacity 0.3s ease;' +
+                        'pointer-events: none;' +
+                        'z-index: 999;' +
+                    '}' +
+                    '.chatbot-overlay.visible {' +
+                        'opacity: 1;' +
+                        'pointer-events: auto;' +
+                    '}' +
+                    '.chatbot-header {' +
+                        'display: flex;' +
+                        'align-items: center;' +
+                        'padding: 16px 20px;' +
+                        'background: white;' +
+                        'border-radius: 16px 16px 0 0;' +
+                        'border-bottom: 1px solid rgba(0,0,0,0.1);' +
+                    '}' +
+                    '.logo {' +
+                        'margin-right: 12px;' +
+                    '}' +
+                    '.logo img {' +
+                        'width: 24px;' +
+                        'height: 24px;' +
+                    '}' +
+                    '.header-text {' +
+                        'flex-grow: 1;' +
+                    '}' +
+                    '.header-text div:first-child {' +
+                        'font-weight: 600;' +
+                        'font-size: 16px;' +
+                    '}' +
+                    '.status {' +
+                        'display: flex;' +
+                        'align-items: center;' +
+                        'font-size: 12px;' +
+                        'color: #4CAF50;' +
+                    '}' +
+                    '.status-indicator {' +
+                        'width: 8px;' +
+                        'height: 8px;' +
+                        'background: #4CAF50;' +
+                        'border-radius: 50%;' +
+                        'margin-right: 4px;' +
+                    '}' +
+                    '.maximize-button, .close-button {' +
+                        'background: none;' +
+                        'border: none;' +
+                        'font-size: 20px;' +
+                        'padding: 4px 8px;' +
+                        'cursor: pointer;' +
+                        'color: #666;' +
+                        'margin-left: 8px;' +
+                    '}' +
+                    '.maximize-button:hover, .close-button:hover {' +
+                        'color: #333;' +
+                    '}' +
+                    '@media (max-width: 480px) {' +
+                        '.chatbot-container {' +
+                            'width: 100%;' +
+                            'height: 100vh;' +
+                            'bottom: 0;' +
+                            'right: 0;' +
+                            'left: 0;' +
+                            'top: 0;' +
+                            'border-radius: 0;' +
+                            'transform-origin: bottom center;' +
+                            'transform: translateY(100%);' +
+                            'opacity: 1;' +
+                        '}' +
+                        '.chatbot-container.visible {' +
+                            'transform: translateY(0);' +
+                        '}' +
+                        '.chatbot-window {' +
+                            'height: calc(100vh - 130px);' +
+                            'overflow-y: auto;' +
+                            '-webkit-overflow-scrolling: touch;' +
+                        '}' +
+                        '.input-container {' +
+                            'position: fixed;' +
+                            'bottom: 0;' +
+                            'left: 0;' +
+                            'right: 0;' +
+                            'padding: 16px;' +
+                            'background: white;' +
+                            'border-top: 1px solid rgba(0,0,0,0.1);' +
+                        '}' +
+                    '}' +
+                    '.chatbot-window {' +
+                        'height: 320px;' +
+                        'overflow-y: auto;' +
+                        'padding: 20px;' +
+                        'background: #fafafa;' +
+                    '}' +
+                    '.chatbot-message {' +
+                        'margin-bottom: 16px;' +
+                        'padding: 14px 18px;' +
+                        'border-radius: 16px;' +
+                        'max-width: 85%;' +
+                        'word-wrap: break-word;' +
+                        'font-size: 14px;' +
+                        'line-height: 1.5;' +
+                        'transition: transform 0.2s ease;' +
+                    '}' +
+                    '.bot-message {' +
+                        'background: rgb(254, 246, 231);' +
+                        'color: #000000;' +
+                        'margin-right: auto;' +
+                        'border-bottom-left-radius: 4px;' +
+                        'box-shadow: 0 2px 8px rgba(0,0,0,0.08);' +
+                    '}' +
+                    '.user-message {' +
+                        'background: #1a237e;' +
+                        'color: white;' +
+                        'margin-left: auto;' +
+                        'border-bottom-right-radius: 4px;' +
+                        'box-shadow: 0 2px 8px rgba(26,35,126,0.08);' +
+                    '}' +
+                    '.input-container {' +
+                        'display: flex;' +
+                        'padding: 16px 20px;' +
+                        'background: white;' +
+                        'border-radius: 0 0 16px 16px;' +
+                        'border-top: 1px solid rgba(0,0,0,0.1);' +
+                        'position: relative;' +
+                        'z-index: 2;' +
+                        'min-height: 70px;' +
+                        'box-sizing: border-box;' +
+                    '}' +
+                    '.message-input {' +
+                        'flex-grow: 1;' +
+                        'padding: 12px 18px;' +
+                        'border: 2px solid #eee;' +
+                        'border-radius: 12px;' +
+                        'margin-right: 12px;' +
+                        'outline: none;' +
+                        'font-size: 14px;' +
+                        'transition: all 0.2s ease;' +
+                        'background: #f8f8f8;' +
+                        'height: 45px;' +
+                        'box-sizing: border-box;' +
+                    '}' +
+                    '.message-input:focus {' +
+                        'border-color: #1a237e;' +
+                        'background: white;' +
+                        'box-shadow: 0 2px 8px rgba(26,35,126,0.06);' +
+                    '}' +
+                    '.send-button {' +
+                        'background: #1a237e;' +
+                        'color: white;' +
+                        'border: none;' +
+                        'padding: 12px 24px;' +
+                        'border-radius: 12px;' +
+                        'cursor: pointer;' +
+                        'font-weight: 600;' +
+                        'font-size: 14px;' +
+                        'transition: all 0.2s ease;' +
+                        'white-space: nowrap;' +
+                        'height: 45px;' +
+                        'box-sizing: border-box;' +
+                    '}' +
+                    '.send-button:hover:not(:disabled) {' +
+                        'background: #C62D3B;' +
+                        'transform: translateY(-1px);' +
+                        'box-shadow: 0 4px 12px rgba(223,51,67,0.12);' +
+                    '}' +
+                    '.send-button:disabled {' +
+                        'opacity: 0.7;' +
+                        'cursor: not-allowed;' +
+                        'transform: none;' +
+                    '}' +
+                    '.chatbot-window::-webkit-scrollbar {' +
+                        'width: 6px;' +
+                    '}' +
+                    '.chatbot-window::-webkit-scrollbar-track {' +
+                        'background: transparent;' +
+                    '}' +
+                    '.chatbot-window::-webkit-scrollbar-thumb {' +
+                        'background: rgba(223,51,67,0.2);' +
+                        'border-radius: 3px;' +
+                    '}' +
+                    '.chatbot-window::-webkit-scrollbar-thumb:hover {' +
+                        'background: rgba(223,51,67,0.3);' +
+                    '}' +
+                    '.bot-message a {' +
+                        'color: #000000;' +
+                        'text-decoration: underline;' +
+                        'font-weight: 500;' +
+                    '}' +
+                    '.bot-message ul {' +
+                        'margin: 0;' +
+                        'padding-left: 20px;' +
+                    '}' +
+                    '.bot-message li {' +
+                        'margin-bottom: 5px;' +
+                    '}' +
+                    '.bot-message strong {' +
+                        'font-weight: 700;' +
+                    '}';
+
+                // Crear estructura del chatbot
+                var header = createElementSafe('div', {'class': 'chatbot-header'});
+                var logo = createElementSafe('div', {'class': 'logo'});
+                var logoImg = createElementSafe('img', {
+                    'src': 'https://cdn-icons-png.flaticon.com/512/2076/2076218.png',
+                    'alt': 'Virtual Assistant'
+                });
+                logo.appendChild(logoImg);
+                
+                var headerText = createElementSafe('div', {'class': 'header-text'});
+                var title = createElementSafe('div', {}, 'Asistente Virtual');
+                var status = createElementSafe('div', {'class': 'status'});
+                var statusIndicator = createElementSafe('span', {'class': 'status-indicator'});
+
+                // Crear botón de maximizar
+                var maximizeButton = createElementSafe('button', {
+                    'class': 'maximize-button',
+                    'onclick': 'window.toggleMaximize()'
+                }, '⛶'); // Símbolo de maximizar
+
+                var closeButton = createElementSafe('button', {
+                    'class': 'close-button',
+                    'onclick': 'window.closeChatbot()'
+                }, '×');
+
+                // Ensamblar elementos
+                status.appendChild(statusIndicator);
+                status.appendChild(document.createTextNode('Online'));
+                headerText.appendChild(title);
+                headerText.appendChild(status);
+                header.appendChild(logo);
+                header.appendChild(headerText);
+                header.appendChild(maximizeButton);
+                header.appendChild(closeButton);
+
+                // Crear ventana de chat
+                var chatWindow = createElementSafe('div', {
+                    'class': 'chatbot-window',
+                    'id': 'chat-window'
+                });
+
+                // Añadir mensajes iniciales
+                var welcomeMsg = createElementSafe('div', {
+                    'class': 'chatbot-message bot-message'
+                }, '¡Hola! Soy tu asistente virtual.');
+                var helpMsg = createElementSafe('div', {
+                    'class': 'chatbot-message bot-message'
+                }, '¿En qué puedo ayudarte hoy?');
+
+                chatWindow.appendChild(welcomeMsg);
+                chatWindow.appendChild(helpMsg);
+
+                // Crear contenedor de input
+                var inputContainer = createElementSafe('div', {'class': 'input-container'});
+                var messageInput = createElementSafe('input', {
+                    'type': 'text',
+                    'class': 'message-input',
+                    'id': 'message-input',
+                    'placeholder': 'Escribe tu pregunta aquí...'
+                });
+                var sendButton = createElementSafe('button', {
+                    'class': 'send-button',
+                    'onclick': 'window.sendMessage()'
+                }, 'Enviar');
+
+                inputContainer.appendChild(messageInput);
+                inputContainer.appendChild(sendButton);
+
+                // Ensamblar todo
+                chatbotContainer.appendChild(styleElement);
+                chatbotContainer.appendChild(header);
+                chatbotContainer.appendChild(chatWindow);
+                chatbotContainer.appendChild(inputContainer);
+
+                // Añadir al body de forma segura
+                if (document.body) {
+                    document.body.appendChild(chatButton);
+                    document.body.appendChild(chatbotContainer);
+                }
+
+                // Añadir función para crear el overlay
+                var overlay = createElementSafe('div', {'class': 'chatbot-overlay'});
+                document.body.appendChild(overlay);
+
+                // Definir funciones globales
+                window.openChatbot = function() {
+                    var container = document.querySelector('.chatbot-container');
+                    var button = document.getElementById('chat-button');
+                    if (container && button) {
+                        container.style.display = 'block';
+                        // Forzar un reflow
+                        container.offsetHeight;
+                        container.classList.add('visible');
+                        button.style.display = 'none';
+                        // Prevenir scroll del body en móvil
+                        document.body.style.overflow = 'hidden';
+                    }
+                };
+
+                window.closeChatbot = function() {
+                    var container = document.querySelector('.chatbot-container');
+                    var button = document.getElementById('chat-button');
+                    var overlay = document.querySelector('.chatbot-overlay');
+                    
+                    if (container && button) {
+                        // Si está maximizado, primero quitamos esa clase y el overlay
+                        if (container.classList.contains('maximized')) {
+                            container.classList.remove('maximized');
+                            overlay.classList.remove('visible');
+                        }
+                        
+                        container.classList.remove('visible');
+                        // Esperar a que termine la animación
+                        setTimeout(function() {
+                            container.style.display = 'none';
+                            button.style.display = 'flex';
+                            // Restaurar scroll del body
+                            document.body.style.overflow = '';
+                        }, 500);
+                    }
+                };
+
+                // Añadir evento click al botón
+                chatButton.addEventListener('click', window.openChatbot);
+
+                window.sendMessage = function() {
+                    var messageInput = document.getElementById('message-input');
+                    var chatWindow = document.getElementById('chat-window');
+                    var sendButton = document.querySelector('.send-button');
+                    var message = messageInput.value.trim();
+
+                    if (!message) return;
+
+                    // Deshabilitar botón mientras se envía
+                    sendButton.disabled = true;
+
+                    // Crear y añadir mensaje del usuario
+                    var userMessageDiv = createElementSafe('div', {
+                        'class': 'chatbot-message user-message'
+                    }, message);
+                    chatWindow.appendChild(userMessageDiv);
+
+                    // Limpiar input
+                    messageInput.value = '';
+
+                    // Mostrar indicador de escritura
+                    var typingIndicator = document.createElement('div');
+                    typingIndicator.className = 'typing-indicator';
+                    typingIndicator.innerHTML = 
+                        '<div class="typing-dot"></div>' +
+                        '<div class="typing-dot"></div>' +
+                        '<div class="typing-dot"></div>';
+                    chatWindow.appendChild(typingIndicator);
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+
+                    // Llamar a nuestro endpoint PHP
+                    fetch('https://ia.bmind.es/env/api/agent.php', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': '*/*',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: message
+                        })
+                    })
+                    .then(function(response) {
+                        if (!response.ok) {
+                            return response.text().then(function(text) {
+                                try {
+                                    var error = JSON.parse(text);
+                                    throw new Error(error.message || 'Error del servidor');
+                                } catch (e) {
+                                    throw new Error('Error en la respuesta: ' + response.status);
+                                }
+                            });
+                        }
+                        return response.text().then(function(text) {
+                            try {
+                                return text ? JSON.parse(text) : {};
+                            } catch (e) {
+                                console.error('Error parsing JSON:', text);
+                                return { error: 'Error al procesar la respuesta' };
+                            }
+                        });
+                    })
+                    .then(function(response) {
+                        console.log('Respuesta de la API:', response);
+                        typingIndicator.remove();
+                        
+                        var botResponse;
+                        if (response.error) {
+                            throw new Error(response.message || 'Error en la respuesta');
+                        } else if (typeof response === 'string') {
+                            botResponse = response;
+                        } else if (response.outputs && response.outputs[0] && 
+                                 response.outputs[0].outputs && 
+                                 response.outputs[0].outputs[0] && 
+                                 response.outputs[0].outputs[0].artifacts && 
+                                 response.outputs[0].outputs[0].artifacts.message) {
+                            botResponse = response.outputs[0].outputs[0].artifacts.message;
+                        } else {
+                            console.error('Estructura de respuesta inesperada:', response);
+                            botResponse = 'No se pudo obtener una respuesta clara';
+                        }
+
+                        // Formatear el texto en negrita (debe ir antes que los enlaces para evitar conflictos)
+                        botResponse = botResponse.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+                        
+                        // Formatear el mensaje para manejar enlaces markdown
+                        botResponse = botResponse.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+                        
+                        // Formatear bullet points si existen
+                        botResponse = botResponse.replace(/^\s*[-*]\s+(.+)$/gm, '<li>$1</li>');
+                        if (botResponse.includes('<li>')) {
+                            botResponse = '<ul>' + botResponse + '</ul>';
+                        }
+                        
+                        // Manejar saltos de línea
+                        botResponse = botResponse.replace(/\n\n/g, '<br><br>');
+                        
+                        var botMessageDiv = createElementSafe('div', {
+                            'class': 'chatbot-message bot-message'
+                        });
+                        botMessageDiv.innerHTML = botResponse;
+                        
+                        chatWindow.appendChild(botMessageDiv);
+                        chatWindow.scrollTop = chatWindow.scrollHeight;
+                    })
+                    .catch(function(error) {
+                        console.error('Error:', error);
+                        typingIndicator.remove();
+                        
+                        var errorMessageDiv = createElementSafe('div', {
+                            'class': 'chatbot-message bot-message'
+                        }, 'Lo siento, hubo un error en la comunicación: ' + error.message);
+                        chatWindow.appendChild(errorMessageDiv);
+                        chatWindow.scrollTop = chatWindow.scrollHeight;
+                    })
+                    .finally(function() {
+                        // Rehabilitar botón
+                        sendButton.disabled = false;
+                    });
+                };
+
+                // Añadir evento keypress al input
+                if (messageInput) {
+                    messageInput.addEventListener('keypress', function(event) {
+                        if (event.key === 'Enter') {
+                            window.sendMessage();
+                        }
+                    });
+                }
+
+                // Modificar la función toggleMaximize
+                window.toggleMaximize = function() {
+                    var container = document.querySelector('.chatbot-container');
+                    var maximizeBtn = document.querySelector('.maximize-button');
+                    var overlay = document.querySelector('.chatbot-overlay');
+                    
+                    if (container.classList.contains('maximized')) {
+                        container.classList.remove('maximized');
+                        maximizeBtn.textContent = '⛶'; // Símbolo de maximizar
+                        overlay.classList.remove('visible');
+                    } else {
+                        container.classList.add('maximized');
+                        maximizeBtn.textContent = '⮯'; // Símbolo de minimizar
+                        overlay.classList.add('visible');
+                    }
+                    
+                    // Ajustar el scroll del chat después de maximizar/minimizar
+                    var chatWindow = document.getElementById('chat-window');
+                    if (chatWindow) {
+                        setTimeout(function() {
+                            chatWindow.scrollTop = chatWindow.scrollHeight;
+                        }, 300);
+                    }
+                };
+
+                // Añadir evento click al overlay para cerrar el modo maximizado
+                overlay.addEventListener('click', function() {
+                    var container = document.querySelector('.chatbot-container');
+                    if (container.classList.contains('maximized')) {
+                        window.toggleMaximize();
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error al crear el chatbot:', error);
+            }
+        }
+
+        // Inicializar de forma segura
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(createChatbot, 500);
+            });
+        } else {
+            setTimeout(createChatbot, 500);
+        }
+
+    })();
+</script>
