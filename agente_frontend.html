@@ -19,14 +19,14 @@
             try {
                 // Crear el contenedor del chatbot con display: none inicial
                 var chatbotContainer = createElementSafe('div', {
-                    'class': 'chatbot-container',
+                    'class': 'ai-assistant-container',
                     'style': 'display: none;' // Aseguramos que esté oculto desde el inicio
                 });
 
                 // Crear el botón flotante
                 var chatButton = createElementSafe('button', {
-                    'class': 'chat-floating-button',
-                    'id': 'chat-button'
+                    'class': 'ai-assistant-floating-button',
+                    'id': 'ai-assistant-button'
                 });
                 
                 var buttonIcon = createElementSafe('img', {
@@ -38,9 +38,9 @@
 
                 // Añadir estilos para el botón flotante y modificar los estilos del contenedor
                 var additionalStyles = 
-                    '.chat-floating-button {' +
+                    '.ai-assistant-floating-button {' +
                         'position: fixed;' +
-                        'bottom: 24px;' +
+                        'bottom: 44px;' +
                         'right: 24px;' +
                         'width: 60px;' +
                         'height: 60px;' +
@@ -50,29 +50,29 @@
                         'cursor: pointer;' +
                         'box-shadow: 0 4px 12px rgba(26,35,126,0.2);' +
                         'transition: all 0.3s ease;' +
-                        'z-index: 1000;' +
+                        'z-index: 999999;' +
                         'padding: 0;' +
                         'display: flex;' +
                         'align-items: center;' +
                         'justify-content: center;' +
                     '}' +
                     '@media (max-width: 480px) {' +
-                        '.chat-floating-button {' +
+                        '.ai-assistant-floating-button {' +
                             'bottom: 16px;' +
                             'right: 16px;' +
                             'width: 50px;' +
                             'height: 50px;' +
                         '}' +
-                        '.chat-floating-button img {' +
+                        '.ai-assistant-floating-button img {' +
                             'width: 25px;' +
                             'height: 25px;' +
                         '}' +
                     '}' +
-                    '.chat-floating-button:hover {' +
+                    '.ai-assistant-floating-button:hover {' +
                         'transform: scale(1.1);' +
                         'box-shadow: 0 6px 16px rgba(26,35,126,0.3);' +
                     '}' +
-                    '.chat-floating-button img {' +
+                    '.ai-assistant-floating-button img {' +
                         'width: 30px;' +
                         'height: 30px;' +
                         'object-fit: contain;' +
@@ -82,59 +82,54 @@
                 // Crear y añadir el estilo
                 var styleElement = createElementSafe('style');
                 styleElement.textContent = additionalStyles + 
-                    '.chatbot-container {' +
+                    '.ai-assistant-container {' +
                         'width: 380px;' +
                         'position: fixed;' +
-                        'bottom: 24px;' +
+                        'bottom: 44px;' +
                         'right: 24px;' +
-                        'z-index: 1000;' +
-                        'background: #fff;' +
+                        'z-index: 999999;' +
+                        'background: white;' +
                         'border-radius: 16px;' +
-                        'box-shadow: 0 8px 24px rgba(0,0,0,0.12);' +
-                        'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;' +
-                        'transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);' +
-                        'transform-origin: bottom right;' +
+                        'box-shadow: 0 5px 40px rgba(0,0,0,0.16);' +
+                        'transition: opacity 0.3s ease;' +
                         'opacity: 0;' +
-                        'transform: scale(0.95);' +
+                        'visibility: hidden;' +
+                        'display: none;' +
                     '}' +
-                    '.chatbot-container.visible {' +
+                    '.ai-assistant-container.visible {' +
                         'opacity: 1;' +
-                        'transform: scale(1);' +
+                        'visibility: visible;' +
+                        'display: block;' +
                     '}' +
-                    '.chatbot-container.maximized {' +
-                        'width: 80%;' +
+                    '.ai-assistant-container.maximized {' +
+                        'width: 90%;' +
+                        'height: 90%;' +
                         'max-width: 800px;' +
-                        'height: 80vh;' +
-                        'position: fixed;' +
-                        'top: 50%;' +
+                        'max-height: 800px;' +
+                        'top: 5%;' +
                         'left: 50%;' +
-                        'transform: translate(-50%, -50%);' +
-                        'bottom: auto;' +
                         'right: auto;' +
-                        'display: flex;' +
-                        'flex-direction: column;' +
-                        'overflow: hidden;' +
-                        'padding-bottom: 20px;' +
+                        'bottom: auto;' +
+                        'transform: translateX(-50%);' +
                     '}' +
-                    '.chatbot-container.maximized .chatbot-window {' +
+                    '.ai-assistant-container.maximized .ai-assistant-window {' +
                         'flex: 1;' +
                         'height: calc(100% - 180px);' +
                         'overflow-y: auto;' +
                         'margin-bottom: 0;' +
                     '}' +
-                    '.chatbot-container.maximized .input-container {' +
+                    '.ai-assistant-container.maximized .ai-assistant-input-container {' +
                         'position: relative;' +
                         'bottom: 0;' +
                         'left: 0;' +
                         'right: 0;' +
                         'background: white;' +
-                        'border-radius: 0 0 16px 16px;' +
-                        'margin: 0;' +
-                        'padding: 16px 20px 20px;' +
+                        'border-radius: 16px;' +
+                        'padding: 16px;' +
                         'width: 100%;' +
                         'border-top: 1px solid rgba(0,0,0,0.1);' +
                     '}' +
-                    '.chatbot-overlay {' +
+                    '.ai-assistant-overlay {' +
                         'position: fixed;' +
                         'top: 0;' +
                         'left: 0;' +
@@ -146,148 +141,260 @@
                         'pointer-events: none;' +
                         'z-index: 999;' +
                     '}' +
-                    '.chatbot-overlay.visible {' +
+                    '.ai-assistant-overlay.visible {' +
                         'opacity: 1;' +
                         'pointer-events: auto;' +
                     '}' +
-                    '.chatbot-header {' +
+                    '.ai-assistant-header {' +
                         'display: flex;' +
                         'align-items: center;' +
-                        'padding: 16px 20px;' +
-                        'background: white;' +
-                        'border-radius: 16px 16px 0 0;' +
+                        'padding: 16px;' +
                         'border-bottom: 1px solid rgba(0,0,0,0.1);' +
+                        'justify-content: space-between;' +
                     '}' +
-                    '.logo {' +
+                    '.ai-assistant-header-left {' +
+                        'display: flex !important;' +
+                        'align-items: center !important;' +
+                        'gap: 12px !important;' +
+                    '}' +
+                    '.ai-assistant-header-buttons {' +
+                        'display: flex !important;' +
+                        'align-items: center !important;' +
+                        'margin-left: auto !important;' +
+                    '}' +
+                    '.ai-assistant-logo {' +
                         'margin-right: 12px;' +
                     '}' +
-                    '.logo img {' +
+                    '.ai-assistant-logo img {' +
                         'width: 24px;' +
                         'height: 24px;' +
                     '}' +
-                    '.header-text {' +
-                        'flex-grow: 1;' +
+                    '.ai-assistant-text-container {' +
+                        'display: flex !important;' +
+                        'flex-direction: column !important;' +
+                        'gap: 2px !important;' +
                     '}' +
-                    '.header-text div:first-child {' +
-                        'font-weight: 600;' +
-                        'font-size: 16px;' +
+                    '.ai-assistant-header-text {' +
+                        'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;' +
+                        'font-size: 16px !important;' +
+                        'font-weight: 600 !important;' +
+                        'margin: 0 !important;' +
+                        'color: #333 !important;' +
+                        'line-height: 1.2 !important;' +
                     '}' +
-                    '.status {' +
-                        'display: flex;' +
-                        'align-items: center;' +
-                        'font-size: 12px;' +
-                        'color: #4CAF50;' +
+                    '.ai-assistant-status {' +
+                        'display: flex !important;' +
+                        'align-items: center !important;' +
+                        'gap: 5px !important;' +
+                        'font-size: 13px !important;' +
+                        'color: #666 !important;' +
                     '}' +
-                    '.status-indicator {' +
-                        'width: 8px;' +
-                        'height: 8px;' +
-                        'background: #4CAF50;' +
-                        'border-radius: 50%;' +
-                        'margin-right: 4px;' +
+                    '.ai-assistant-status-indicator {' +
+                        'width: 8px !important;' +
+                        'height: 8px !important;' +
+                        'background-color: #4CAF50 !important;' +
+                        'border-radius: 50% !important;' +
+                        'display: inline-block !important;' +
                     '}' +
-                    '.maximize-button, .close-button {' +
-                        'background: none;' +
-                        'border: none;' +
-                        'font-size: 20px;' +
-                        'padding: 4px 8px;' +
-                        'cursor: pointer;' +
-                        'color: #666;' +
+                    '.ai-assistant-maximize-button, .ai-assistant-close-button {' +
+                        'background: none !important;' +
+                        'background-color: transparent !important;' +
+                        'border: none !important;' +
+                        'padding: 12px !important;' +
+                        'cursor: pointer !important;' +
+                        'color: #666 !important;' +
+                        'display: flex !important;' +
+                        'align-items: center !important;' +
+                        'justify-content: center !important;' +
+                        'transition: color 0.3s ease !important;' +
+                        'outline: none !important;' +
+                        'box-shadow: none !important;' +
+                        '-webkit-appearance: none !important;' +
+                        '-moz-appearance: none !important;' +
+                        'appearance: none !important;' +
+                        'width: 44px !important;' +
+                        'height: 44px !important;' +
+                        'font-size: 20px !important;' +
+                        'margin-left: 4px !important;' +
+                    '}' +
+                    '.ai-assistant-close-button {' +
                         'margin-left: 8px;' +
                     '}' +
-                    '.maximize-button:hover, .close-button:hover {' +
-                        'color: #333;' +
+                    '.ai-assistant-mic-button:hover, .ai-assistant-mic-button:focus, ' +
+                    '.ai-assistant-maximize-button:hover, .ai-assistant-maximize-button:focus, ' +
+                    '.ai-assistant-close-button:hover, .ai-assistant-close-button:focus {' +
+                        'background: none !important;' +
+                        'background-color: transparent !important;' +
+                        'outline: none !important;' +
+                        'box-shadow: none !important;' +
+                    '}' +
+                    '.ai-assistant-mic-button:active, ' +
+                    '.ai-assistant-maximize-button:active, ' +
+                    '.ai-assistant-close-button:active {' +
+                        'background: none !important;' +
+                        'background-color: transparent !important;' +
+                        'outline: none !important;' +
+                        'box-shadow: none !important;' +
                     '}' +
                     '@media (max-width: 480px) {' +
-                        '.chatbot-container {' +
+                        '.ai-assistant-container.maximized {' +
                             'width: 100%;' +
-                            'height: 100vh;' +
-                            'bottom: 0;' +
-                            'right: 0;' +
-                            'left: 0;' +
+                            'height: 100%;' +
+                            'max-width: none;' +
+                            'max-height: none;' +
                             'top: 0;' +
+                            'left: 0;' +
+                            'right: 0;' +
+                            'bottom: 0;' +
+                            'transform: none;' +
                             'border-radius: 0;' +
-                            'transform-origin: bottom center;' +
-                            'transform: translateY(100%);' +
-                            'opacity: 1;' +
+                            'margin: 0;' +
                         '}' +
-                        '.chatbot-container.visible {' +
+                        '.ai-assistant-container.visible {' +
                             'transform: translateY(0);' +
                         '}' +
-                        '.chatbot-window {' +
-                            'height: calc(100vh - 130px);' +
+                        '.ai-assistant-window {' +
+                            'flex: 1;' +
+                            'height: auto;' +
                             'overflow-y: auto;' +
                             '-webkit-overflow-scrolling: touch;' +
                         '}' +
-                        '.input-container {' +
-                            'position: fixed;' +
-                            'bottom: 0;' +
-                            'left: 0;' +
-                            'right: 0;' +
+                        '.ai-assistant-input-container {' +
+                            'position: relative;' +
+                            'bottom: auto;' +
+                            'left: auto;' +
+                            'right: auto;' +
                             'padding: 16px;' +
                             'background: white;' +
                             'border-top: 1px solid rgba(0,0,0,0.1);' +
                         '}' +
+                        '.ai-assistant-container.maximized .ai-assistant-header {' +
+                            'border-radius: 0;' +
+                        '}' +
+                        '.ai-assistant-container.maximized .ai-assistant-input-container {' +
+                            'border-radius: 0;' +
+                        '}' +
                     '}' +
-                    '.chatbot-window {' +
+                    '.ai-assistant-window {' +
                         'height: 320px;' +
                         'overflow-y: auto;' +
                         'padding: 20px;' +
                         'background: #fafafa;' +
                     '}' +
-                    '.chatbot-message {' +
-                        'margin-bottom: 16px;' +
-                        'padding: 14px 18px;' +
-                        'border-radius: 16px;' +
-                        'max-width: 85%;' +
-                        'word-wrap: break-word;' +
-                        'font-size: 14px;' +
-                        'line-height: 1.5;' +
-                        'transition: transform 0.2s ease;' +
+                    '.ai-assistant-message {' +
+                        'padding: 14px 18px !important;' +
+                        'border-radius: 16px !important;' +
+                        'margin-bottom: 24px !important;' +
+                        'max-width: 85% !important;' +
+                        'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;' +
+                        'line-height: 1.5 !important;' +
+                        'font-size: 14px !important;' +
+                        'white-space: pre-wrap !important;' +
+                        'word-wrap: break-word !important;' +
+                        'position: relative !important;' +
+                        'margin-left: 36px !important;' +
                     '}' +
-                    '.bot-message {' +
+                    '.ai-assistant-message-time {' +
+                        'font-size: 11px;' +
+                        'color: #999;' +
+                        'position: absolute;' +
+                        'bottom: -20px;' +
+                        'padding: 2px 0;' +
+                        'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;' +
+                    '}' +
+                    '.ai-assistant-bot-message .ai-assistant-message-time {' +
+                        'left: 0;' +
+                    '}' +
+                    '.ai-assistant-user-message .ai-assistant-message-time {' +
+                        'right: 0;' +
+                    '}' +
+                    '.ai-assistant-bot-message {' +
                         'background: rgb(254, 246, 231);' +
-                        'color: #000000;' +
-                        'margin-right: auto;' +
                         'border-bottom-left-radius: 4px;' +
-                        'box-shadow: 0 2px 8px rgba(0,0,0,0.08);' +
+                        'margin-right: auto;' +
+                        'position: relative !important;' +
                     '}' +
-                    '.user-message {' +
+                    '.ai-assistant-bot-message::before {' +
+                        'content: "" !important;' +
+                        'position: absolute !important;' +
+                        'left: -36px !important;' +
+                        'top: 8px !important;' +
+                        'width: 28px !important;' +
+                        'height: 28px !important;' +
+                        'border-radius: 50% !important;' +
+                        'background-image: url("https://laboralpensiones.com/wp-content/uploads/2018/04/cropped-pple-e1523813619441-1-192x192.jpg") !important;' +
+                        'background-size: cover !important;' +
+                        'background-position: center !important;' +
+                        'background-repeat: no-repeat !important;' +
+                        'box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;' +
+                    '}' +
+                    '.ai-assistant-user-message {' +
                         'background: #1a237e;' +
                         'color: white;' +
                         'margin-left: auto;' +
                         'border-bottom-right-radius: 4px;' +
                         'box-shadow: 0 2px 8px rgba(26,35,126,0.08);' +
                     '}' +
-                    '.input-container {' +
-                        'display: flex;' +
-                        'padding: 16px 20px;' +
-                        'background: white;' +
-                        'border-radius: 0 0 16px 16px;' +
-                        'border-top: 1px solid rgba(0,0,0,0.1);' +
+                    '.ai-assistant-input-container {' +
                         'position: relative;' +
-                        'z-index: 2;' +
-                        'min-height: 70px;' +
+                        'bottom: 0;' +
+                        'left: 0;' +
+                        'right: 0;' +
+                        'padding: 16px;' +
+                        'background: white;' +
+                        'border-top: 1px solid rgba(0,0,0,0.1);' +
+                        'display: flex;' +
+                        'align-items: center;' +
+                        'gap: 8px;' +
                         'box-sizing: border-box;' +
+                        'width: 100%;' +
                     '}' +
-                    '.message-input {' +
-                        'flex-grow: 1;' +
-                        'padding: 12px 18px;' +
-                        'border: 2px solid #eee;' +
-                        'border-radius: 12px;' +
-                        'margin-right: 12px;' +
-                        'outline: none;' +
+                    '.ai-assistant-mic-button {' +
+                        'background: none !important;' +
+                        'background-color: transparent !important;' +
+                        'border: none !important;' +
+                        'padding: 6px !important;' +
+                        'cursor: pointer !important;' +
+                        'color: #666 !important;' +
+                        'display: flex !important;' +
+                        'align-items: center !important;' +
+                        'justify-content: center !important;' +
+                        'font-size: 16px !important;' +
+                        'width: 32px !important;' +
+                        'height: 32px !important;' +
+                        'border-radius: 50% !important;' +
+                        'transition: all 0.3s ease !important;' +
+                        'outline: none !important;' +
+                        'box-shadow: none !important;' +
+                        '-webkit-appearance: none !important;' +
+                        '-moz-appearance: none !important;' +
+                        'appearance: none !important;' +
+                    '}' +
+                    '.ai-assistant-mic-button.recording {' +
+                        'color: #ef5350;' +
+                        'animation: pulse 1.5s ease infinite;' +
+                    '}' +
+                    '@keyframes pulse {' +
+                        '0% { transform: scale(1); }' +
+                        '50% { transform: scale(1.1); }' +
+                        '100% { transform: scale(1); }' +
+                    '}' +
+                    '.ai-assistant-message-input {' +
+                        'flex: 1;' +
+                        'border: none;' +
+                        'padding: 12px;' +
                         'font-size: 14px;' +
-                        'transition: all 0.2s ease;' +
-                        'background: #f8f8f8;' +
-                        'height: 45px;' +
-                        'box-sizing: border-box;' +
+                        'border-radius: 8px;' +
+                        'background: #f5f5f5;' +
+                        'margin-right: 8px;' +
+                        'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;' +
                     '}' +
-                    '.message-input:focus {' +
+                    '.ai-assistant-message-input:focus {' +
                         'border-color: #1a237e;' +
                         'background: white;' +
                         'box-shadow: 0 2px 8px rgba(26,35,126,0.06);' +
                     '}' +
-                    '.send-button {' +
+                    '.ai-assistant-send-button {' +
                         'background: #1a237e;' +
                         'color: white;' +
                         'border: none;' +
@@ -301,112 +408,212 @@
                         'height: 45px;' +
                         'box-sizing: border-box;' +
                     '}' +
-                    '.send-button:hover:not(:disabled) {' +
+                    '.ai-assistant-send-button:hover:not(:disabled) {' +
                         'background: #C62D3B;' +
                         'transform: translateY(-1px);' +
                         'box-shadow: 0 4px 12px rgba(223,51,67,0.12);' +
                     '}' +
-                    '.send-button:disabled {' +
+                    '.ai-assistant-send-button:disabled {' +
                         'opacity: 0.7;' +
                         'cursor: not-allowed;' +
                         'transform: none;' +
                     '}' +
-                    '.chatbot-window::-webkit-scrollbar {' +
+                    '.ai-assistant-window::-webkit-scrollbar {' +
                         'width: 6px;' +
                     '}' +
-                    '.chatbot-window::-webkit-scrollbar-track {' +
+                    '.ai-assistant-window::-webkit-scrollbar-track {' +
                         'background: transparent;' +
                     '}' +
-                    '.chatbot-window::-webkit-scrollbar-thumb {' +
+                    '.ai-assistant-window::-webkit-scrollbar-thumb {' +
                         'background: rgba(223,51,67,0.2);' +
                         'border-radius: 3px;' +
                     '}' +
-                    '.chatbot-window::-webkit-scrollbar-thumb:hover {' +
+                    '.ai-assistant-window::-webkit-scrollbar-thumb:hover {' +
                         'background: rgba(223,51,67,0.3);' +
                     '}' +
-                    '.bot-message a {' +
+                    '.ai-assistant-bot-message a {' +
                         'color: #000000;' +
                         'text-decoration: underline;' +
                         'font-weight: 500;' +
                     '}' +
-                    '.bot-message ul {' +
+                    '.ai-assistant-bot-message ul {' +
                         'margin: 0;' +
                         'padding-left: 20px;' +
                     '}' +
-                    '.bot-message li {' +
+                    '.ai-assistant-bot-message li {' +
                         'margin-bottom: 5px;' +
                     '}' +
-                    '.bot-message strong {' +
+                    '.ai-assistant-bot-message strong {' +
                         'font-weight: 700;' +
+                    '}' +
+                    '.ai-assistant-typing-indicator {' +
+                        'background: rgb(254, 246, 231);' +
+                        'padding: 14px 18px;' +
+                        'border-radius: 16px;' +
+                        'border-bottom-left-radius: 4px;' +
+                        'display: flex;' +
+                        'align-items: center;' +
+                        'margin-bottom: 16px;' +
+                        'max-width: 85%;' +
+                        'margin-right: auto;' +
+                        'box-shadow: 0 2px 8px rgba(0,0,0,0.08);' +
+                    '}' +
+                    '.ai-assistant-typing-dot {' +
+                        'width: 8px;' +
+                        'height: 8px;' +
+                        'background: #666;' +
+                        'border-radius: 50%;' +
+                        'margin: 0 2px;' +
+                        'animation: ai-assistant-typing 1.4s infinite;' +
+                        'opacity: 0.3;' +
+                    '}' +
+                    '.ai-assistant-typing-dot:nth-child(2) {' +
+                        'animation-delay: 0.2s;' +
+                    '}' +
+                    '.ai-assistant-typing-dot:nth-child(3) {' +
+                        'animation-delay: 0.4s;' +
+                    '}' +
+                    '@keyframes ai-assistant-typing {' +
+                        '0%, 100% { opacity: 0.3; transform: translateY(0); }' +
+                        '50% { opacity: 1; transform: translateY(-4px); }' +
+                    '}' +
+                    '.ai-assistant-message a {' +
+                        'color: #0066cc !important;' +
+                        'text-decoration: underline !important;' +
+                        'cursor: pointer !important;' +
+                        'transition: color 0.3s ease !important;' +
+                    '}' +
+                    '.ai-assistant-message a:hover {' +
+                        'color: #004999 !important;' +
+                        'text-decoration: underline !important;' +
+                    '}' +
+                    '.ai-assistant-message-content {' +
+                        'margin-bottom: 4px !important;' +
                     '}';
 
                 // Crear estructura del chatbot
-                var header = createElementSafe('div', {'class': 'chatbot-header'});
-                var logo = createElementSafe('div', {'class': 'logo'});
+                var header = createElementSafe('div', {
+                    'class': 'ai-assistant-header'
+                });
+
+                var headerLeft = createElementSafe('div', {
+                    'class': 'ai-assistant-header-left'
+                });
+
+                var headerButtons = createElementSafe('div', {
+                    'class': 'ai-assistant-header-buttons'
+                });
+
+                // Crear el logo
+                var logo = createElementSafe('div', {'class': 'ai-assistant-logo'});
                 var logoImg = createElementSafe('img', {
                     'src': 'https://cdn-icons-png.flaticon.com/512/2076/2076218.png',
                     'alt': 'Virtual Assistant'
                 });
                 logo.appendChild(logoImg);
                 
-                var headerText = createElementSafe('div', {'class': 'header-text'});
-                var title = createElementSafe('div', {}, 'Asistente Virtual');
-                var status = createElementSafe('div', {'class': 'status'});
-                var statusIndicator = createElementSafe('span', {'class': 'status-indicator'});
+                // Crear contenedor para título y estado
+                var headerTextContainer = createElementSafe('div', {
+                    'class': 'ai-assistant-text-container'
+                });
+
+                // Crear el texto principal
+                var headerText = createElementSafe('div', {
+                    'class': 'ai-assistant-header-text'
+                }, 'IA Laboral Pensiones');
+
+                // Crear el indicador de estado
+                var statusIndicator = createElementSafe('div', {
+                    'class': 'ai-assistant-status-indicator'
+                });
+
+                // Crear el contenedor de estado
+                var status = createElementSafe('div', {
+                    'class': 'ai-assistant-status'
+                });
+
+                // Crear el texto de estado
+                var statusText = document.createTextNode('En línea');
+
+                // Ensamblar el estado
+                status.appendChild(statusIndicator);
+                status.appendChild(statusText);
+
+                // Ensamblar el contenedor de texto
+                headerTextContainer.appendChild(headerText);
+                headerTextContainer.appendChild(status);
+
+                // Añadir al header (en lugar de headerText y status por separado)
+                headerLeft.appendChild(logo);
+                headerLeft.appendChild(headerTextContainer);
 
                 // Crear botón de maximizar
                 var maximizeButton = createElementSafe('button', {
-                    'class': 'maximize-button',
+                    'class': 'ai-assistant-maximize-button',
                     'onclick': 'window.toggleMaximize()'
                 }, '⛶'); // Símbolo de maximizar
 
                 var closeButton = createElementSafe('button', {
-                    'class': 'close-button',
+                    'class': 'ai-assistant-close-button',
                     'onclick': 'window.closeChatbot()'
                 }, '×');
 
-                // Ensamblar elementos
-                status.appendChild(statusIndicator);
-                status.appendChild(document.createTextNode('Online'));
-                headerText.appendChild(title);
-                headerText.appendChild(status);
-                header.appendChild(logo);
-                header.appendChild(headerText);
-                header.appendChild(maximizeButton);
-                header.appendChild(closeButton);
+                // Crear el ícono del micrófono
+                var micIcon = createElementSafe('i', {
+                    'class': 'fas fa-microphone'
+                });
+
+                // Crear el botón de micrófono
+                var micButton = createElementSafe('button', {
+                    'class': 'ai-assistant-mic-button',
+                    'type': 'button',
+                    'aria-label': 'Grabar audio'
+                });
+
+                // Añadir el ícono al botón
+                micButton.appendChild(micIcon);
+
+                // Añadir botones al headerButtons
+                headerButtons.appendChild(maximizeButton);
+                headerButtons.appendChild(closeButton);
+
+                // Añadir todo al header
+                header.appendChild(headerLeft);
+                header.appendChild(headerButtons);
 
                 // Crear ventana de chat
                 var chatWindow = createElementSafe('div', {
-                    'class': 'chatbot-window',
-                    'id': 'chat-window'
+                    'class': 'ai-assistant-window',
+                    'id': 'ai-assistant-window'
                 });
 
                 // Añadir mensajes iniciales
                 var welcomeMsg = createElementSafe('div', {
-                    'class': 'chatbot-message bot-message'
+                    'class': 'ai-assistant-message ai-assistant-bot-message'
                 }, '¡Hola! Soy tu asistente virtual.');
                 var helpMsg = createElementSafe('div', {
-                    'class': 'chatbot-message bot-message'
+                    'class': 'ai-assistant-message ai-assistant-bot-message'
                 }, '¿En qué puedo ayudarte hoy?');
 
                 chatWindow.appendChild(welcomeMsg);
                 chatWindow.appendChild(helpMsg);
 
                 // Crear contenedor de input
-                var inputContainer = createElementSafe('div', {'class': 'input-container'});
+                var inputContainer = createElementSafe('div', {'class': 'ai-assistant-input-container'});
                 var messageInput = createElementSafe('input', {
                     'type': 'text',
-                    'class': 'message-input',
-                    'id': 'message-input',
+                    'class': 'ai-assistant-message-input',
+                    'id': 'ai-assistant-message-input',
                     'placeholder': 'Escribe tu pregunta aquí...'
                 });
                 var sendButton = createElementSafe('button', {
-                    'class': 'send-button',
+                    'class': 'ai-assistant-send-button',
                     'onclick': 'window.sendMessage()'
                 }, 'Enviar');
 
                 inputContainer.appendChild(messageInput);
                 inputContainer.appendChild(sendButton);
+                inputContainer.insertBefore(micButton, sendButton);
 
                 // Ensamblar todo
                 chatbotContainer.appendChild(styleElement);
@@ -421,13 +628,13 @@
                 }
 
                 // Añadir función para crear el overlay
-                var overlay = createElementSafe('div', {'class': 'chatbot-overlay'});
+                var overlay = createElementSafe('div', {'class': 'ai-assistant-overlay'});
                 document.body.appendChild(overlay);
 
                 // Definir funciones globales
                 window.openChatbot = function() {
-                    var container = document.querySelector('.chatbot-container');
-                    var button = document.getElementById('chat-button');
+                    var container = document.querySelector('.ai-assistant-container');
+                    var button = document.getElementById('ai-assistant-button');
                     if (container && button) {
                         container.style.display = 'block';
                         // Forzar un reflow
@@ -440,9 +647,9 @@
                 };
 
                 window.closeChatbot = function() {
-                    var container = document.querySelector('.chatbot-container');
-                    var button = document.getElementById('chat-button');
-                    var overlay = document.querySelector('.chatbot-overlay');
+                    var container = document.querySelector('.ai-assistant-container');
+                    var button = document.getElementById('ai-assistant-button');
+                    var overlay = document.querySelector('.ai-assistant-overlay');
                     
                     if (container && button) {
                         // Si está maximizado, primero quitamos esa clase y el overlay
@@ -465,46 +672,77 @@
                 // Añadir evento click al botón
                 chatButton.addEventListener('click', window.openChatbot);
 
+                // Mover la función al scope global
+                window.createMessageWithTime = function(message, isUser) {
+                    var messageDiv = createElementSafe('div', {
+                        'class': 'ai-assistant-message ' + (isUser ? 'ai-assistant-user-message' : 'ai-assistant-bot-message')
+                    });
+
+                    // Crear un div para el contenido del mensaje
+                    var messageContent = createElementSafe('div', {
+                        'class': 'ai-assistant-message-content'
+                    });
+                    
+                    // Establecer el HTML del mensaje de forma segura
+                    messageContent.innerHTML = message;
+
+                    // Procesar todos los enlaces en el mensaje
+                    var links = messageContent.getElementsByTagName('a');
+                    for (var i = 0; i < links.length; i++) {
+                        links[i].setAttribute('target', '_blank');
+                        links[i].setAttribute('rel', 'noopener noreferrer');
+                        links[i].style.color = '#0066cc';
+                        links[i].style.textDecoration = 'underline';
+                    }
+
+                    // Crear el div de tiempo
+                    var timeDiv = createElementSafe('div', {
+                        'class': 'ai-assistant-message-time'
+                    }, new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
+                    // Añadir contenido y tiempo al mensaje
+                    messageDiv.appendChild(messageContent);
+                    messageDiv.appendChild(timeDiv);
+
+                    return messageDiv;
+                };
+
+                // Modificar la función sendMessage para usar la función global
                 window.sendMessage = function() {
-                    var messageInput = document.getElementById('message-input');
-                    var chatWindow = document.getElementById('chat-window');
-                    var sendButton = document.querySelector('.send-button');
+                    var messageInput = document.getElementById('ai-assistant-message-input');
+                    var chatWindow = document.getElementById('ai-assistant-window');
+                    var sendButton = document.querySelector('.ai-assistant-send-button');
                     var message = messageInput.value.trim();
 
                     if (!message) return;
 
-                    // Deshabilitar botón mientras se envía
                     sendButton.disabled = true;
-
-                    // Crear y añadir mensaje del usuario
-                    var userMessageDiv = createElementSafe('div', {
-                        'class': 'chatbot-message user-message'
-                    }, message);
+                    
+                    var userMessageDiv = window.createMessageWithTime(message, true);
                     chatWindow.appendChild(userMessageDiv);
-
-                    // Limpiar input
+                    
                     messageInput.value = '';
 
-                    // Mostrar indicador de escritura
-                    var typingIndicator = document.createElement('div');
-                    typingIndicator.className = 'typing-indicator';
-                    typingIndicator.innerHTML = 
-                        '<div class="typing-dot"></div>' +
-                        '<div class="typing-dot"></div>' +
-                        '<div class="typing-dot"></div>';
+                    var typingIndicator = createElementSafe('div', {
+                        'class': 'ai-assistant-typing-indicator'
+                    });
+                    
+                    for (var i = 0; i < 3; i++) {
+                        var dot = createElementSafe('div', {
+                            'class': 'ai-assistant-typing-dot'
+                        });
+                        typingIndicator.appendChild(dot);
+                    }
+                    
                     chatWindow.appendChild(typingIndicator);
                     chatWindow.scrollTop = chatWindow.scrollHeight;
 
-                    // Llamar a nuestro endpoint PHP
-                    fetch('https://ia.bmind.es/env/api/agent.php', {
+                    fetch('https://ia.bmind.es/env/api/agentlp.php', {
                         method: 'POST',
                         headers: {
-                            'Accept': '*/*',
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({
-                            message: message
-                        })
+                        body: JSON.stringify({ message: message })
                     })
                     .then(function(response) {
                         if (!response.ok) {
@@ -528,7 +766,10 @@
                     })
                     .then(function(response) {
                         console.log('Respuesta de la API:', response);
-                        typingIndicator.remove();
+                        // Remover el indicador de escritura antes de mostrar la respuesta
+                        if (typingIndicator) {
+                            typingIndicator.remove();
+                        }
                         
                         var botResponse;
                         if (response.error) {
@@ -561,21 +802,20 @@
                         // Manejar saltos de línea
                         botResponse = botResponse.replace(/\n\n/g, '<br><br>');
                         
-                        var botMessageDiv = createElementSafe('div', {
-                            'class': 'chatbot-message bot-message'
-                        });
-                        botMessageDiv.innerHTML = botResponse;
+                        var botMessageDiv = window.createMessageWithTime(botResponse, false);
                         
                         chatWindow.appendChild(botMessageDiv);
                         chatWindow.scrollTop = chatWindow.scrollHeight;
                     })
                     .catch(function(error) {
                         console.error('Error:', error);
-                        typingIndicator.remove();
+                        // Remover el indicador de escritura en caso de error
+                        if (typingIndicator) {
+                            typingIndicator.remove();
+                        }
                         
-                        var errorMessageDiv = createElementSafe('div', {
-                            'class': 'chatbot-message bot-message'
-                        }, 'Lo siento, hubo un error en la comunicación: ' + error.message);
+                        var errorMessageDiv = window.createMessageWithTime('Disculpa, parece que estoy teniendo problemas para conectarme en este momento. ¿Podrías intentarlo de nuevo en unos segundos?', false);
+                        
                         chatWindow.appendChild(errorMessageDiv);
                         chatWindow.scrollTop = chatWindow.scrollHeight;
                     })
@@ -596,9 +836,9 @@
 
                 // Modificar la función toggleMaximize
                 window.toggleMaximize = function() {
-                    var container = document.querySelector('.chatbot-container');
-                    var maximizeBtn = document.querySelector('.maximize-button');
-                    var overlay = document.querySelector('.chatbot-overlay');
+                    var container = document.querySelector('.ai-assistant-container');
+                    var maximizeBtn = document.querySelector('.ai-assistant-maximize-button');
+                    var overlay = document.querySelector('.ai-assistant-overlay');
                     
                     if (container.classList.contains('maximized')) {
                         container.classList.remove('maximized');
@@ -611,7 +851,7 @@
                     }
                     
                     // Ajustar el scroll del chat después de maximizar/minimizar
-                    var chatWindow = document.getElementById('chat-window');
+                    var chatWindow = document.getElementById('ai-assistant-window');
                     if (chatWindow) {
                         setTimeout(function() {
                             chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -621,10 +861,132 @@
 
                 // Añadir evento click al overlay para cerrar el modo maximizado
                 overlay.addEventListener('click', function() {
-                    var container = document.querySelector('.chatbot-container');
+                    var container = document.querySelector('.ai-assistant-container');
                     if (container.classList.contains('maximized')) {
                         window.toggleMaximize();
                     }
+                });
+
+                // Variables para el reconocimiento de voz
+                var recognition = null;
+                try {
+                    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    recognition = new window.SpeechRecognition();
+                    recognition.lang = 'es-ES';
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
+                } catch(e) {
+                    console.warn('El reconocimiento de voz no está soportado en este navegador');
+                }
+
+                // Modificar el evento click del micrófono
+                micButton.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevenir cualquier comportamiento por defecto
+                    e.stopPropagation(); // Detener la propagación del evento
+
+                    if (!recognition) {
+                        alert('Lo siento, tu navegador no soporta el reconocimiento de voz');
+                        return;
+                    }
+
+                    if (micButton.classList.contains('recording')) {
+                        recognition.stop();
+                        micButton.classList.remove('recording');
+                    } else {
+                        recognition.start();
+                        micButton.classList.add('recording');
+                    }
+                });
+
+                // Eventos del reconocimiento de voz
+                if (recognition) {
+                    recognition.onresult = function(event) {
+                        event.preventDefault(); // Prevenir comportamiento por defecto
+                        event.stopPropagation(); // Detener propagación
+
+                        var transcript = event.results[0][0].transcript;
+                        var inputElement = document.getElementById('ai-assistant-message-input');
+                        
+                        // Asegurarnos de que tenemos el elemento correcto
+                        if (inputElement && inputElement.classList.contains('ai-assistant-message-input')) {
+                            inputElement.value = transcript;
+                            
+                            // Opcional: disparar un evento de input para activar cualquier listener
+                            var inputEvent = new Event('input', {
+                                bubbles: true,
+                                cancelable: true,
+                            });
+                            inputElement.dispatchEvent(inputEvent);
+                        }
+                        
+                        micButton.classList.remove('recording');
+                    };
+
+                    recognition.onerror = function(event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        console.error('Error en el reconocimiento:', event.error);
+                        micButton.classList.remove('recording');
+                    };
+
+                    recognition.onend = function(event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        micButton.classList.remove('recording');
+                    };
+                }
+
+                // Añadir Font Awesome para el ícono del micrófono
+                var fontAwesome = document.createElement('link');
+                fontAwesome.rel = 'stylesheet';
+                fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+                document.head.appendChild(fontAwesome);
+
+                // Mover la función al scope global
+                window.handleMobileViewport = function(isMaximized) {
+                    var viewportMeta = document.querySelector('meta[name="viewport"]');
+                    var isMobile = window.innerWidth <= 480;
+
+                    if (isMobile && isMaximized) {
+                        if (!viewportMeta) {
+                            viewportMeta = document.createElement('meta');
+                            viewportMeta.name = 'viewport';
+                            document.head.appendChild(viewportMeta);
+                        }
+                        viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+                    } else {
+                        if (viewportMeta) {
+                            viewportMeta.content = 'width=device-width, initial-scale=1.0';
+                        }
+                    }
+                };
+
+                // Modificar la función de maximizar
+                maximizeButton.addEventListener('click', function() {
+                    container.classList.toggle('maximized');
+                    var isMaximized = container.classList.contains('maximized');
+                    maximizeButton.innerHTML = isMaximized ? 
+                        '<i class="fas fa-compress-alt"></i>' : 
+                        '<i class="fas fa-expand-alt"></i>';
+                    window.handleMobileViewport(isMaximized);
+                });
+
+                // Manejar cambios de orientación
+                window.addEventListener('orientationchange', function() {
+                    var isMaximized = container.classList.contains('maximized');
+                    window.handleMobileViewport(isMaximized);
+                });
+
+                // Manejar cambios de tamaño de ventana
+                window.addEventListener('resize', function() {
+                    var isMaximized = container.classList.contains('maximized');
+                    window.handleMobileViewport(isMaximized);
+                });
+
+                // Asegurarse de que se restaure el viewport al cerrar
+                closeButton.addEventListener('click', function() {
+                    window.handleMobileViewport(false);
+                    container.classList.remove('visible');
                 });
 
             } catch (error) {
